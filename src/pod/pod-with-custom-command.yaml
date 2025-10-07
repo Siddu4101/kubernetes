@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Pod
+
+metadata:
+  name: pod-with-custom-command
+
+spec:
+  containers:
+    - name: container-with-custom-command
+      image: coolgourav147/nginx-custom
+      command:
+        - echo
+      args:
+        - "my name is sid"
