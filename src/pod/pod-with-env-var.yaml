@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+
+metadata:
+  name: pod-with-env-var
+
+spec:
+  containers:
+    - name: container-with-env-var
+      image: coolgourav147/nginx-custom
+      env:
+        - name: version
+          value: v1
+        - name: hi
+          value: hello
