@@ -1,0 +1,18 @@
+siddu4101@LAPTOP-6P0ALQQ8:/mnt/c/Users/Sid/Learning/kubernetes/src/pod$ kubectl exec pod-with-env-var -- env
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+HOSTNAME=pod-with-env-var
+version=v1
+hi=hello
+KUBERNETES_PORT_443_TCP_ADDR=10.96.0.1
+KUBERNETES_SERVICE_HOST=10.96.0.1
+KUBERNETES_SERVICE_PORT=443
+KUBERNETES_SERVICE_PORT_HTTPS=443
+KUBERNETES_PORT=tcp://10.96.0.1:443
+KUBERNETES_PORT_443_TCP=tcp://10.96.0.1:443
+KUBERNETES_PORT_443_TCP_PROTO=tcp
+KUBERNETES_PORT_443_TCP_PORT=443
+NGINX_VERSION=1.17.6
+NJS_VERSION=0.3.7
+PKG_RELEASE=1~buster
+HOME=/root
+siddu4101@LAPTOP-6P0ALQQ8:/mnt/c/Users/Sid/Learning/kubernetes/src/pod$

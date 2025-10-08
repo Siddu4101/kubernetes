@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Pod
+
+metadata:
+  name: pod-with-init-container
+
+spec:
+  initContainers: 
+    - name: init-1-container
+      image: coolgourav147/nginx-custom
+      command: 
+        - sh
+        - -c
+      args: 
+        - "echo 'first init container is creating'; sleep 10"
+    - name: init-2-container
+      image: coolgourav147/nginx-custom
+      command: ["sh", "-c"]
+      args: 
+        - "echo 'second init container is creating'; sleep 10"
+  containers:
+    - name: normal-container
+      image: coolgourav147/nginx-custom
