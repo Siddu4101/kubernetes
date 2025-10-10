@@ -1,0 +1,13 @@
+kind: Service
+apiVersion: v1
+
+metadata:
+  name: backend-service
+
+spec:
+  selector:
+    app: backend
+  ports:
+    - port: 8080 # port of the service which takes incoming requests and fwd to target port of available pod via kube-proxy
+      targetPort: 5678 #port of the pod where actually application running
+#  type: ClusterIP #default the service will be clusterIp

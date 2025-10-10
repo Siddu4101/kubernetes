@@ -1,0 +1,14 @@
+kind: Pod
+apiVersion: v1
+
+metadata:
+  name: backend-pod
+  labels:
+    app: backend #this is seen by the service to serve the request to this pod
+
+spec:
+  containers:
+    - name: backend-container
+      image: hashicorp/http-echo # default port is 5678
+      args:
+        - "-text=Hello from Backend!"

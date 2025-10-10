@@ -1,0 +1,13 @@
+kind: Pod
+apiVersion: v1
+
+metadata:
+  name: frontend-pod
+  labels:
+    app: frontend
+
+spec:
+  containers:
+    - name: frontend-container
+      image: curlimages/curl
+      command: ["sh", "-c", "while true; do echo 'Calling backend...'; curl http://backend-service:8080; sleep 5; done"] # calling the backend via service clusterIp mode
