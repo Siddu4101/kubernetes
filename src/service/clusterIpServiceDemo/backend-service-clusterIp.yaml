@@ -6,7 +6,7 @@ metadata:
 
 spec:
   selector:
-    app: backend
+    app: backend #this is the pods label for which request will be served
   ports:
     - port: 8080 # port of the service which takes incoming requests and fwd to target port of available pod via kube-proxy
       targetPort: 5678 #port of the pod where actually application running
