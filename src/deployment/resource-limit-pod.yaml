@@ -1,0 +1,19 @@
+kind: Pod
+apiVersion: v1
+
+metadata:
+  name: resource-limit-test-pod
+  labels:
+    purpose: test-lower-limit
+
+spec:
+  containers:
+    - image: coolgourav147/nginx-custom:v1
+      name: resource-limit-test-container
+      resources:
+        requests:
+          cpu: 100m #scheduler checks at least of this much cpu to schedule this pod
+          memory: 512Mi #scheduler checks least of this much memory node present there only it schedules this pod
+        limits:
+          cpu: 500m  # max 1/2 cpu it can use beyond that it will experience throttling
+          memory: 1024Mi #Max this container can use 1024Mi beyond that it will fail with OOMKilled
