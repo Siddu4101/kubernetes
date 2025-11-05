@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: frontend-deployment-with-replica
+  annotations:
+    kubernetes.io/change-cause: first version latest
+
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: frontend # all the pods with this label will be handled by this replicaset
+  template:
+    metadata:
+      name: frontend-pod
+      labels:
+        app: frontend # this is the label seen by the replicaset to maintain the desiered state
+    spec:
+      containers:
+        - name: frontend-container
+          image: coolgourav147/nginx-custom
+

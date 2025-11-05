@@ -1,0 +1,15 @@
+kind: Service
+apiVersion: v1
+
+metadata: 
+  name: replica-service-nodeport
+
+spec:
+  selector:
+    app: frontend
+  ports:
+    - port: 7000
+      targetPort: 80
+  type: NodePort
+
+  
