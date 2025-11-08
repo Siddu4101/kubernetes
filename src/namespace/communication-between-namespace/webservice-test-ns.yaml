@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  namespace: test
+  name: ws-test-ns
+spec:
+  containers:
+  - image: nginx
+    name: ws-test-ns

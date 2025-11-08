@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: db-default-ns
+  name: database
+spec:
+  containers:
+  - image: nginx
+    name: databse
