@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: LimitRange
+
+metadata:
+  name: limit-range-test
+  namespace: limit-range-ns
+spec:
+  limits:
+   - type: Container
+     default: # this will assigns the default limits for a container
+      cpu: 0.5
+      memory: 1Gi
+     defaultRequest: # this will assigns the default request limits for containers
+      cpu: 0.1
+      memory: 100Mi
+     max: # this is the max limit/request a container can have in this namespace
+      cpu: 1
+      memory: 2Gi
+     min: # this is the minimum limit/request a container can have in this namespace
+      cpu: 0.05
+      memory: 50Mi
+     maxLimitRequestRatio:  # this is the ratio limits/request possible in this namespace
+      cpu: 10
+      memory: 15
