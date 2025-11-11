@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: pod-without-resource-def
+  name: pod-without-resource-def
+  namespace: limit-range-ns
+spec:
+  containers:
+  - image: nginx
+    name: ngnix-cotainer

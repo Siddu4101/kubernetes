@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ResourceQuota
+
+metadata:
+  name: object-quota
+
+spec:
+  hard:
+    pods: 2

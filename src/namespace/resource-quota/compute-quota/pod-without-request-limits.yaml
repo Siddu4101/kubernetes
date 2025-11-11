@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: pod-without-limits-requests
+  name: pod-without-limits-requests
+  namespace: test
+spec:
+  containers:
+  - image: nginx
+    name: ngnix-cotainer

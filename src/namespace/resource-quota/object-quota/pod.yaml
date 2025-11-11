@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: db-default-ns
+  name: pod3
+  namespace: test
+spec:
+  containers:
+  - image: nginx
+    name: ngnix-cotainer
