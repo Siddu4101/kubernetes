@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: cm-usage-via-env-var
+spec:
+  containers:
+  - image: nginx
+    name: ngnix-cotainer      
+    envFrom:
+      - configMapRef: #usage of literal cm
+          name: cm-from-literal
+        prefix: B_
+      - configMapRef: #usage of env file cm
+          name: cm-from-env-file
+        prefix: A_
+      - configMapRef: # usage of simple file cm (for directory also it works the same(create each env var for each file) so skipping)
+          name: simple-file-cm

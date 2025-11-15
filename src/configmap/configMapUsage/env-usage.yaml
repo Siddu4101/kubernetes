@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: env-and-cm-usage
+spec:
+  containers:
+  - image: nginx
+    name: ngnix-cotainer
+    env: #static value env var
+      - name: version #key 
+        value: 1.0.0 #value 
+      - name: environment
+        value: DEV      
+      - name: ENV_VAR_FROM_CM # the PORT from cm-from-env will be available as this name in env and this is env from CM
+        valueFrom:
+          configMapKeyRef:
+            name: cm-from-env-file # cm name to pick a key 
+            key: PORT # field you want to choose from the cm to make it available as  env var
