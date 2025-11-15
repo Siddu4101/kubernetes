@@ -1,0 +1,80 @@
+# =========================================================
+# 1. ConfigMap created from literals
+# Equivalent of:
+# kubectl create configmap cm-from-literal \
+#   --from-literal=mode=prod \
+#   --from-literal=timeout=30
+# =========================================================
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cm-from-literal
+data:
+  mode: "prod"
+  timeout: "30"
+---
+# =========================================================
+# 2. ConfigMap created from a single file
+# Equivalent of:
+# kubectl create configmap cm-from-single-file \
+#   --from-file=app.properties
+# Here we add the pipe(|) to add the content of the file
+# Example file (app.properties):
+#   app.mode=prod
+#   app.timeout=20
+# =========================================================
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cm-from-single-file
+data:
+  app.properties: |
+    app.mode=prod
+    app.timeout=20
+---
+# =========================================================
+# 3. ConfigMap created from a directory
+# Equivalent of:
+# kubectl create configmap cm-from-directory \
+#   --from-file=config-dir/
+#
+# Directory structure:
+# config-dir/config.yaml
+# config-dir/settings.json
+# =========================================================
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cm-from-directory
+data:
+  config.yaml: |
+    app:
+      name: sample
+      version: 1.0
+
+  settings.json: |
+    {
+      "enabled": true,
+      "threshold": 15
+    }
+---
+# =========================================================
+# 4. ConfigMap created from an env file
+# Equivalent of:
+# kubectl create configmap cm-from-env-file \
+#   --from-env-file=app.env
+#
+# Example app.env:
+#   MODE=dev
+#   PORT=8080
+#   TIMEOUT=60
+# =========================================================
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cm-from-env-file
+data:
+  MODE: "dev"
+  PORT: "8080"
+  TIMEOUT: "60"
+
