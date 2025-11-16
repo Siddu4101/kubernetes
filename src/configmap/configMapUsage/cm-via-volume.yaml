@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: cm-usage-via-volume-mount
+spec:
+  containers:
+  - image: nginx
+    name: ngnix-cotainer      
+    volumeMounts:
+      - name: valume-for-config-map # should match with volume name where u have mentioned the cm
+        mountPath: /etc/config # path were we store the files inside the pod
+  
+  volumes:
+    - name: valume-for-config-map #volume for storage of cm files
+      configMap:
+        name: cm-from-directory # cm from whihch we get the files to mount
+        items: # this is optoional if u skip it will add all the files to the 'monthPath'
+         - key: config.yaml #cm to be choosen from the above cm and and skipped settings.json another file in the above cm
+           path: config_for_volume_mount.yaml #renamed the selected file from the cm
