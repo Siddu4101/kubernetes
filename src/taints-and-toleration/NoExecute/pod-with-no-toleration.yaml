@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    run: taints-and-toleration
+  name: pod-with-no-toleration-latest
+spec:
+  containers:
+  - image: nginx
+    name: taints-and-toleration
