@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    run: pod-with-toleration
+  name: pod-with-noexecute-toleration
+spec:
+  containers:
+  - image: nginx
+    name: pod-with-toleration
+      
+  tolerations: 
+    - key: key #key of the taint present on the node you want this pod to be tolerate
+      operator: Exists # operator by default Equal(must match key and value of taint) you can use Exists (ignores value)
+        #value: value # value of the taint (only used when operator = Equals)
+      effect: NoExecute
+        #tolerationSeconds: 30 # how many sec the pod sustaint without matching toleration on the node when effect = NoExecute(only works with NoExecute)
