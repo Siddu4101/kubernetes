@@ -1767,7 +1767,3 @@ tolerations:
 ---
 
 For more details, refer to the official [Minikube documentation](https://minikube.sigs.k8s.io/docs/).
-
-
-
-happy-birthday-to-me
