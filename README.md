@@ -1,4 +1,4 @@
-﻿# Kubernetes Lessons
+# Kubernetes Lessons
 
 Welcome! This repository contains step-by-step lessons for setting up and using Kubernetes locally.
 
@@ -12,6 +12,8 @@ Welcome! This repository contains step-by-step lessons for setting up and using 
  - [Configmap 🗄️](#configmap)
  - [Secret 🔐](#secret)
  - [Taints and Toleration ⚖️](#taints-and-toleration)
+ - [Node Selector 🎯](#node-selector)
+
 
 <details id="kubernetes-local-setup">
 <summary><strong>Kubernetes Local Setup (minikube with WSL)</strong></summary>
@@ -1764,6 +1766,102 @@ tolerations:
 ```
 
 </details>
+---
+
+<details id="node-selector">
+<summary><strong>Node Selector</strong></summary>
+
+## 🎯 What Is a Node Selector?
+
+`nodeSelector` is the simplest built‑in scheduling constraint. It tells the scheduler to place the Pod only on nodes that have ALL the exact key/value labels matches.
+
+### 🤔 Why Use It?
+- 🏷️ Environment separation (e.g., `env=prod` vs `env=dev` nodes)
+- 🔐 Restrict sensitive workloads to hardened / isolated nodes
+- 🖥️ Target special hardware (GPU, high‑memory, SSD, ARM)
+- 🧪 Keep test jobs on disposable nodes
+
+> ⚠️ `nodeSelector` only supports exact match. For more expressive matching (In / NotIn / Exists) we need to use `nodeAffinity`. For exclusion use `taints & toleration's`.
+
+### 🧩 How It Works
+1. Label the node(s): `kubectl label node <nodeName> key=value`.
+2. Add `nodeSelector:` to the Pod spec with the same key/value.
+3. If no node matches, the Pod stays `Pending` until a matching node appears.
+4. If it finds one it will be scheduled on that node
+
+---
+
+###  Case A: Pod with no node selector and node has node=minikube label 🔖
+Pod without `nodeSelector` (it can run on any node).
+
+```cmd
+kubectl get nodes --show-labels
+kubectl label node minikube node=minikube
+kubectl get nodes --show-labels
+kubectl apply -f pod-with-no-node-selector.yaml
+kubectl get pods --show-labels
+```
+
+![Pod without nodeSelector (runs anywhere)](resource/node-selector/podWithNoNodeSelector.png)
+
+---
+
+### Case B: Pod With Matching Node Selector ✅
+This Pod will schedule because the node has `node=minikube` and pod has matching nodeSelector.
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-with-node-selector
+spec:
+  containers:
+    - name: container-with-node-selector
+      image: nginx
+  nodeSelector:
+    node: minikube
+```
+
+```cmd
+kubectl apply -f pod-with-node-selector.yaml
+kubectl get pods -o wide
+```
+
+![Pod scheduled with matching nodeSelector](resource/node-selector/podWithCorrectNodeSelector.png)
+
+---
+
+### Case C: Pod With Non‑Matching Node Selector ❌
+Requests a label that no node has (`node=worker`), so it will stay `Pending`.
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-with-wrong-node-selector
+spec:
+  containers:
+    - name: container-with-wrong-node-selector
+      image: nginx
+  nodeSelector:
+    node: worker
+```
+
+```cmd
+kubectl apply -f pod-with-wrong-node-selector.yaml
+kubectl get pods
+```
+
+![Pod pending with non-matching nodeSelector](resource/node-selector/podWithWrongNodeSelector.png)
+
+Remove the node label
+```cmd
+kubectl label node minikube node-
+kubectl get nodes --show-labels
+```
+
+</details>
+
 ---
 
 For more details, refer to the official [Minikube documentation](https://minikube.sigs.k8s.io/docs/).
