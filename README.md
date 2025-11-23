@@ -1956,6 +1956,16 @@ kubectl get pods
 ```
 ![Preferred - Pod scheduled despite non-matching preference](resource/node-affinity/preferDuringScheduling/withWrongAffinityLabel.png)
 If no node matches the preferred expression, the Pod will still be scheduled on an available node (soft rule).
+
+> **Note — Another 2 more Affinities 🔁**
+>
+> - **Pod Affinity** 🤝: Prefer scheduling a Pod on a node that already runs Pods with matching labels. Useful for co-locating related workloads (sidecars, caches, tightly-coupled services).
+>   - Example: place a logging sidecar on the same node as the application pod.
+>
+>
+> - **Pod Anti‑Affinity** 🚫: Prefer avoiding nodes that already run Pods with matching labels. Useful for spreading replicas across nodes to increase availability and reduce resource contention.
+>   - Example: spread database replicas across different nodes so they don't share a single point of failure.
+
 </details>
 ---
 
