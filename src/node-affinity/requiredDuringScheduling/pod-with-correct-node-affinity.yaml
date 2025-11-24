@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-with-correct-node-affinity
+spec:
+  containers:
+  - image: nginx
+    name: container-with-correct-node-affinity
+
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution: #must follow the below condition to schedule this pod
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: disktype #key of the label that node should have
+            operator: In #operator used between key and value to decide case of schedule
+            values:
+            - ssd #value of the lable
+

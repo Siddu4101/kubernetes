@@ -1,4 +1,4 @@
-# Kubernetes Lessons
+﻿# Kubernetes Lessons
 
 Welcome! This repository contains step-by-step lessons for setting up and using Kubernetes locally.
 
@@ -13,7 +13,7 @@ Welcome! This repository contains step-by-step lessons for setting up and using 
  - [Secret 🔐](#secret)
  - [Taints and Toleration ⚖️](#taints-and-toleration)
  - [Node Selector 🎯](#node-selector)
-
+ - [Node Affinity 🧲](#node-affinity)
 
 <details id="kubernetes-local-setup">
 <summary><strong>Kubernetes Local Setup (minikube with WSL)</strong></summary>
@@ -1766,7 +1766,6 @@ tolerations:
 ```
 
 </details>
----
 
 <details id="node-selector">
 <summary><strong>Node Selector</strong></summary>
@@ -1862,6 +1861,112 @@ kubectl get nodes --show-labels
 
 </details>
 
+<details id="node-affinity">
+<summary><strong>Node Affinity 🧲</strong></summary>
+
+## Node Affinity 🧲
+
+Similar to `nodeSelector`, Node Affinity supports pattern matching for labels and preferences. we can use this to prefer nodes based on labels.
+
+> Note: the suffix `IgnoredDuringExecution` means changes to node labels after a Pod is running will not evict that Pod.
+
+### 1) Required (hard rule) ✅
+
+The `requiredDuringSchedulingIgnoredDuringExecution` rule must be satisfied for a Pod to be scheduled. If no node matches, the Pod remains `Pending`.
+
+Example YAML (required):
+```yaml
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution: #must follow the below condition to schedule this pod
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: disktype #key of the label that node should have
+            operator: In #operator used between key and value to decide case of schedule
+            values:
+            - ssd #value of the lable
+```
+Note: in operator we have multiple values like replicaSet but here we have 2 more operator when the label values is a number(Gt -> greater than and Lt -> less than only used when label value is number)
+
+| Operator         | Meaning                                    |
+| ---------------- | ------------------------------------------ |
+| **In**           | key must have one of the listed values     |
+| **NotIn**        | key must not have the listed values        |
+| **Exists**       | key must exist (value not needed)          |
+| **DoesNotExist** | key must not exist                         |
+| **Gt**           | key’s value must be greater than specified |
+| **Lt**           | key’s value must be less than specified    |
+
+### a. when the label present with expected value on a node the pod will be scheduled and will run
+I will attach the disktype=ssd to the minikube node and create pod with affinity as disktype In ssd
+```cmd
+kubectl get nodes --show-labels
+kubectl label node minikube disktype=ssd
+kubectl get nodes --show-labels
+kubectl apply -f pod-with-correct-node-affinity.yaml
+kubectl get pod
+```
+![Required - Pod scheduled with correct affinity](resource/node-affinity/required-during-scheduling/withCorrectAffinityLabels.png)
+### b. Now I will try the same with wrong value(disktype=harddisk) of the label inside pod affinity
+Now the pod must remain in the pending state as it is `hard-rule`
+If the Pod's affinity requires a label value that doesn't exist on any node (e.g., `harddisk`), the Pod will stay `Pending`.
+```yaml
+kubectl apply -f pod-with-wrong-node-affinity.yaml
+kubectl get pods
+```
+![Required - Pod pending with wrong affinity](resource/node-affinity/required-during-scheduling/withWrongAffinityLabels.png)
+
+### 2) Preferred (soft rule) 💡
+
+- The `preferredDuringSchedulingIgnoredDuringExecution` rule expresses a preference — the scheduler scores nodes and prefers matches, but will schedule elsewhere if no suitable node matches. Multiple preferences can be provided with `weight` (1–100).
+- If we have multiple rules with different weights then the node which have the sum of the rules is higher gets the pod scheduled
+
+Example YAML (preferred):
+```yaml
+affinity:
+  nodeAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution: #prefer to follow the below condition to schedule this pod
+    - weight: 1 # can be 1-100 higher the value higher the preference
+      preference:
+        matchExpressions:
+        - key: disktype #key of the label that node should have
+          operator: In #operator used between key and value to decide case of schedule
+          values:
+          - ssd #value of the lable
+```
+
+
+### a. when the label present with expected value on a node the pod will be scheduled and will run
+I will attach the disktype=ssd to the minikube node and create pod with affinity as disktype In ssd
+```cmd
+kubectl get nodes --show-labels
+kubectl apply -f pod-with-correct-node-affinity
+kubectl get pods
+```
+![Preferred - Pod scheduled with preferred affinity](resource/node-affinity/preferDuringScheduling/withCorrectAffinityLabel.png)
+
+
+
+###	b. Now I will try the same with wrong value(disktype=harddisk) of the label inside pod affinity
+Even we don't have a any node with this label it will schedule on the existing node as it is a 'soft-rule`
+```cmd
+kubectl get nodes --show-labels
+kubectl apply -f pod-with-wrong-node-affinity.yaml
+kubectl get pods
+```
+![Preferred - Pod scheduled despite non-matching preference](resource/node-affinity/preferDuringScheduling/withWrongAffinityLabel.png)
+If no node matches the preferred expression, the Pod will still be scheduled on an available node (soft rule).
+
+> **Note — Another 2 more Affinities 🔁**
+>
+> - **Pod Affinity** 🤝: Prefer scheduling a Pod on a node that already runs Pods with matching labels. Useful for co-locating related workloads (sidecars, caches, tightly-coupled services).
+>   - Example: place a logging sidecar on the same node as the application pod.
+>
+>
+> - **Pod Anti‑Affinity** 🚫: Prefer avoiding nodes that already run Pods with matching labels. Useful for spreading replicas across nodes to increase availability and reduce resource contention.
+>   - Example: spread database replicas across different nodes so they don't share a single point of failure.
+
+</details>
 ---
 
 For more details, refer to the official [Minikube documentation](https://minikube.sigs.k8s.io/docs/).
