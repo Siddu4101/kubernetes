@@ -1967,6 +1967,8 @@ If no node matches the preferred expression, the Pod will still be scheduled on 
 >   - Example: spread database replicas across different nodes so they don't share a single point of failure.
 
 </details>
+
+volumes
 ---
 
 For more details, refer to the official [Minikube documentation](https://minikube.sigs.k8s.io/docs/).
