@@ -14,7 +14,7 @@ Welcome! This repository contains step-by-step lessons for setting up and using 
  - [Taints and Toleration ⚖️](#taints-and-toleration)
  - [Node Selector 🎯](#node-selector)
  - [Node Affinity 🧲](#node-affinity)
-
+-volumes
 <details id="kubernetes-local-setup">
 <summary><strong>Kubernetes Local Setup (minikube with WSL)</strong></summary>
 
