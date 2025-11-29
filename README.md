@@ -2086,6 +2086,73 @@ ls
 
 ![emptyDir: after pod recreation (data lost)](resource/volumes/emptyDirVolume/emptyDirVolumePodRecreation.png)
 
+  ---
+
+  ### 2) HostPath (Node-Specific Storage) 🗄️
+
+  `hostPath` volumes allow us to mount a directory from the node's filesystem into our Pod.
+  
+ **Security Note:** HostPath gives our Pod access to the node's filesystem, which can be a security risk if not managed carefully! ⚠️
+
+  #### Example YAML:
+  ```yaml
+	spec:
+      containers:
+        - image: nginx
+          name: pod-with-hostpath-volume
+          volumeMounts:
+            - name: hostpath-vol # volume from which u want to create mount for placement of the file
+              mountPath: /my-volume/hostpath/ # mount you want to make it available inside the container at this path
+
+      volumes:
+        - name: hostpath-vol #volume name
+          hostPath:
+            path: /volumes/hostpathVolume/ # node path where u want to create a directory for container volumes
+            type: DirectoryOrCreate # check for the directory above if not presents creates on the node and uses
+  ```
+
+  #### When to use HostPath:
+  - Node-level log storage 📝
+  - System file access for containers 🖥️
+  - Run a Pod on a specific node to access node-local configs 📂
+
+  ---
+
+  **a. We will create a Pod and write files to HostPath volume:**
+  ```cmd
+  minikube ssh
+  cd /
+  ls
+  exit
+  kubectl apply -f pod-with-hostpath-vol.yaml
+  kubectl get pods
+  kubectl exec -it pod-with-hostpath-volume -- bash
+  cd /my-volume/hostpath/
+  echo "File created via hostpath volume mounted on container" > host_path_file.txt
+  cat host_path_file.txt
+  exit
+  minikube ssh
+  cd /
+  ls
+  cd volumes/hostpathVolume/
+  cat host_path_file.txt
+  ```
+  
+![HostPath Volume Before Pod Recreation](resource/volumes/hostPathVolume/hostpathVolumeBeforePodRecreation.png)
+
+  **b. And now we will delete and recreate the Pod, verify data persists:**
+  ```cmd
+  kubectl get pods
+  kubectl delete -f pod-with-hostpath-vol.yaml
+  kubectl apply -f pod-with-hostpath-vol.yaml
+  kubectl get pods
+  kubectl exec -it pod-with-hostpath-volume -- bash
+  cd /my-volume/hostpath/
+  ls
+  cat host_path_file.txt
+  ```
+  
+![HostPath Volume After Pod Recreation](resource/volumes/hostPathVolume/hostpathVolumeAfterPodRecreation.png)
 
 </details>
 
