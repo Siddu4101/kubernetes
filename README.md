@@ -14,7 +14,6 @@ Welcome! This repository contains step-by-step lessons for setting up and using 
  - [Taints and Toleration ⚖️](#taints-and-toleration)
  - [Node Selector 🎯](#node-selector)
  - [Node Affinity 🧲](#node-affinity)
-
  - [Volumes 📦](#volumes)
 
 <details id="kubernetes-local-setup">
@@ -1971,7 +1970,7 @@ If no node matches the preferred expression, the Pod will still be scheduled on 
 </details>
 
 <details id="volumes">
-<summary><strong>Volumes 📦</strong></summary>
+<summary><strong>Volumes</strong></summary>
 
 ## Volumes 📦
 
@@ -2029,6 +2028,11 @@ ls
 
 ### 1) emptyDir (ephemeral to the Pod) 📁
 `emptyDir` is a directory that exists for the lifetime of the Pod. It persists across container restarts in the same Pod, but is removed when the Pod is deleted or rescheduled to a different node.
+
+  When to use this:
+  - When you want to share data between containers in the same Pod 🤝
+  - Caching data for fast access ⚡
+  - Storing logs for the Pod's lifecycle 📄
 
 ```yaml
     spec:
