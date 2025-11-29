@@ -15,6 +15,8 @@ Welcome! This repository contains step-by-step lessons for setting up and using 
  - [Node Selector 🎯](#node-selector)
  - [Node Affinity 🧲](#node-affinity)
 
+ - [Volumes 📦](#volumes)
+
 <details id="kubernetes-local-setup">
 <summary><strong>Kubernetes Local Setup (minikube with WSL)</strong></summary>
 
@@ -1862,7 +1864,7 @@ kubectl get nodes --show-labels
 </details>
 
 <details id="node-affinity">
-<summary><strong>Node Affinity 🧲</strong></summary>
+<summary><strong>Node Affinity</strong></summary>
 
 ## Node Affinity 🧲
 
@@ -1968,7 +1970,121 @@ If no node matches the preferred expression, the Pod will still be scheduled on 
 
 </details>
 
-volumes
+<details id="volumes">
+<summary><strong>Volumes 📦</strong></summary>
+
+## Volumes 📦
+
+Volumes provide a way to persist data or share files between containers in a Pod. By default, each container has its own ephemeral filesystem — files written inside a container are lost when the container is removed or the Pod is recreated.
+
+### Example: container filesystem is ephemeral 🧱
+we will run a Pod without any volume mount, create files inside the container, then recreate the Pod — the files will be gone.
+
+```yaml
+    spec:
+      containers:
+      - image: nginx
+    name: pod-with-container-volume
+
+```
+
+```cmd
+kubectl apply -f pod-with-container-vol.yaml
+kubectl get pods
+kubectl exec -it pod-with-container-volume -- bash
+cd /tmp
+touch file1.txt file2.txt
+echo "This is container volume test" > file1.txt
+cat file1.txt
+```
+
+![Container: before container destroyed](resource/volumes/contianerVolume/containerVolumeBeforeContainerDestroy.png)
+
+Now recreate the container(simulationof container failure) 
+
+```cmd
+kubectl get pods
+kubectl describe pod pod-with-container-volume | grep Container
+minikube ssh
+docker ps | grep cdfc26c
+docker rm -f cdfc26cadbdd
+exit
+kubectl describe pod pod-with-container-volume | grep Container
+kubectl exec -it pod-with-container-volume -- bash
+cd /tmp
+ls
+``` 
+
+![Container: after container destroyed and recreated](resource/volumes/contianerVolume/containerVolumeAfterContainerDestroy.png)
+
+### Volume types overview 📚
+| Volume Type | Survives Container Restart | Survives Node Restart | Survives Pod Move to New Node | Use Case |
+|---|---:|---:|---:|---|
+| `emptyDir` | Yes (within same Pod) | No | No | Caching, scratch space, temp files |
+| `hostPath` | Yes | Yes (on same node) | No | Logging, debugging, access host filesystem |
+| `PV / PVC` | Yes | Yes | Yes (if backed by shared storage) | Real persistent storage (databases, stateful apps) |
+| `configMap` / `secret` (as volumes) | Yes | Yes | Yes | Configuration, credentials |
+
+---
+
+### 1) emptyDir (ephemeral to the Pod) 📁
+`emptyDir` is a directory that exists for the lifetime of the Pod. It persists across container restarts in the same Pod, but is removed when the Pod is deleted or rescheduled to a different node.
+
+```yaml
+    spec:
+      containers:
+      - image: nginx
+        name: pod-with-emptydir-volume
+        volumeMounts:
+        - name: empty-dir-vol # volume from which u want to create mount for placement of the file
+          mountPath: /my-volume/emptyDir/ # mount you want to make it available inside the container at this path
+    
+      volumes:
+      - name: empty-dir-vol #volume name
+        emptyDir: {} #emptyDir is a pod scoped vol and {} to defines use the default config od emptyDir like sotorage size etc..
+  
+```
+### a. After container restart it survives and data stays safe 
+
+```cmd
+kubectl apply -f pod-with-emptydir-vol.yaml
+kubectl get pods
+kubectl describe pod pod-with-emptydir-volume | grep Container
+kubectl exec -it pod-with-emptydir-volume -- bash
+cd /my-volume/emptyDir/
+echo "This is test for emptyDir volume" > emptyDirVolumeFile.txt
+cat emptyDirVolumeFile.txt
+exit
+minikube ssh
+docker ps | grep c2f239270
+docker rm -f c2f239270c8b
+exit
+kubectl get pods
+kubectl describe pod pod-with-emptydir-volume | grep Container
+kubectl exec -it pod-with-emptydir-volume -- bash
+cd /my-volume/emptyDir/
+ls
+```
+
+![emptyDir: after container recreation (data preserved)](resource/volumes/emptyDirVolume/emptyDirVolumeContianerRecreation.png)
+
+### b. After pod recreation files are lost
+
+```cmd
+kubectl get pods -o wide
+kubectl delete pod pod-with-emptydir-volume
+kubectl apply -f pod-with-emptydir-vol.yaml 
+kubectl get pods
+kubectl exec -it pod-with-emptydir-volume -- bash
+cd my-volume/emptyDir/
+ls
+```
+
+![emptyDir: after pod recreation (data lost)](resource/volumes/emptyDirVolume/emptyDirVolumePodRecreation.png)
+
+
+</details>
+
 ---
 
 For more details, refer to the official [Minikube documentation](https://minikube.sigs.k8s.io/docs/).
