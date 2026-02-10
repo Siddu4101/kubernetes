@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-with-hostpath-volume
+spec:
+  containers:
+  - image: nginx
+    name: pod-with-hostpath-volume
+    volumeMounts:
+    - name: hostpath-vol # volume from which u want to create mount for placement of the file
+      mountPath: /my-volume/hostpath/ # mount you want to make it available inside the container at this path
+
+  volumes:
+  - name: hostpath-vol #volume name
+    hostPath:
+      path: /volumes/hostpathVolume/ # node path where u want to create a directory for container volumes
+      type: DirectoryOrCreate # check for the directory above if not presents creates on the node and uses

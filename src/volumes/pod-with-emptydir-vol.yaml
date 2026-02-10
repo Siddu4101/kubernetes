@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-with-emptydir-volume
+spec:
+  containers:
+  - image: nginx
+    name: pod-with-emptydir-volume
+    volumeMounts:
+    - name: empty-dir-vol # volume from which u want to create mount for placement of the file
+      mountPath: /my-volume/emptyDir/ # mount you want to make it available inside the container at this path
+
+  volumes:
+  - name: empty-dir-vol #volume name
+    emptyDir: {} #emptyDir is a pod scoped vol and {} to defines use the default config od emptyDir like sotorage size etc..
