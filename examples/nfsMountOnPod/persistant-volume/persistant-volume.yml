@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nfs-pv
+spec:
+  capacity:
+    storage: 1Gi
+
+  accessModes:
+    - ReadWriteMany #this access mode is required for NFS, it allows multiple pods to read and write to the same volume
+
+  persistentVolumeReclaimPolicy: Retain # this policy ensures that the data is not deleted when the PV is released by a PersistentVolumeClaim(PCV), which is important for NFS
+
+  storageClassName: "" # this is required to ensure that the PV is not dynamically provisioned with default storage class, which is not supported for NFS
+
+  nfs:
+    server: 10.110.235.81
+    path: / #this path is the export path on the NFS server, SHARED_DIRECTORY environment variable but the consumer sees it as root itself bcz
+  
+ # siddu4101@LAPTOP-6P0ALQQ8:/mnt/c/Users/Sid/Learning/kubernetes/examples/nfsMountOnPod/persistant-volume$ kubectl exec -it  nfs-server-559bbb4cd6-nnx7b -- sh
+ # cat /etc/exports 
+ # exports *(rw,fsid=0,async,no_subtree_check,no_auth_nlm,insecure,no_root_squash) The fsid = 0 option is used to specify that this export is the root of the NFS filesystem. The rw option allows read and write access to the export. The async option allows the NFS server to respond to requests before the data is written to disk, which can improve performance. The no_subtree_check option disables subtree checking, which can improve performance for large directories. The no_auth_nlm option disables authentication for NLM (Network Lock Manager) requests, which can improve performance. The insecure option allows clients to connect from any port, which can improve compatibility with some clients. The no_root_squash option allows root users on the client to have root access on the server, which can be a security risk but may be necessary for some applications.
+ # and in the server it still points to the /exports directory, which is the SHARED_DIRECTORY environment variable that we set in the nfs-server deployment. This is because the NFS server exports the /exports directory as the root of the NFS filesystem, so when a client mounts the NFS share, it sees the contents of /exports as if they were in the root directory. This allows clients to access the shared data without needing to know the actual path on the server.
