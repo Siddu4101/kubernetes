@@ -15,6 +15,7 @@ Welcome! This repository contains step-by-step lessons for setting up and using 
  - [Node Selector 🎯](#node-selector)
  - [Node Affinity 🧲](#node-affinity)
  - [Volumes 📦](#volumes)
+ - [Examples 📚](#examples)
 
 <details id="kubernetes-local-setup">
 <summary><strong>Kubernetes Local Setup (minikube with WSL)</strong></summary>
@@ -2156,6 +2157,18 @@ ls
 
 </details>
 
+<details id="examples">
+<summary><strong>Examples</strong></summary>
+
+## 📚 Examples
+
+Hands-on scenarios that combine multiple Kubernetes concepts:
+
+1. [NFS Mount on Pod via PV and PVC](examples/nfsMountOnPod/README.md)
+
+</details>
+
 ---
 
 For more details, refer to the official [Minikube documentation](https://minikube.sigs.k8s.io/docs/).
+

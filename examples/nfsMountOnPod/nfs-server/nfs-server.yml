@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nfs-server
+  namespace: nfs-mount-test
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nfs-server #this label must match the label in the pod template below to ensure the deployment can manage the pod
+  template: #this is the pod template
+    metadata:
+      labels:
+        app: nfs-server
+    spec:
+      containers:
+      - name: nfs-server
+        image: itsthenetwork/nfs-server-alpine:latest
+        securityContext:
+          privileged: true
+        env:
+        - name: SHARED_DIRECTORY #this is the directory that will be shared via NFS, it must match the mountPath below
+          value: /exports
+        volumeMounts:
+        - name: nfs-data
+          mountPath: /exports
+
+      volumes: #using emptyDir for demo purposes, in production you would use a persistent volume
+      - name: nfs-data
+        emptyDir: {}

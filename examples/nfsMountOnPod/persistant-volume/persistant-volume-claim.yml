@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nfs-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+
+  resources:
+    requests:
+      storage: 1Gi
+
+  storageClassName: "" # this is required to ensure that the PVC is not dynamically provisioned with default storage class, which is not supported for NFS
